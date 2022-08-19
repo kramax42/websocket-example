@@ -5,8 +5,8 @@ import { WebsocketController } from '../lib/websocket-controller';
 const server = new WebsocketController();
 
 const App: React.FC = () => {
-  const [counter, setCounter] = useState<number>(0);
-  const [clientsAmount, setClientsAmount] = useState<number>(0);
+  const [counter, setCounter] = useState<number>(1987);
+  const [clientsAmount, setClientsAmount] = useState<number>(1);
   const [correlationId, setCorrelationId] = useState<string>('null');
   const [lastMsgToServer, setLastMsgToServer] = useState<MessageTypesToServer>(MessageTypesToServer.Stop);
 
@@ -33,6 +33,14 @@ const App: React.FC = () => {
       type: MessageTypesToServer.Pause,
       correlationId
     });
+    setLastMsgToServer(MessageTypesToServer.Pause);
+  }
+
+  const handleReset = () => {
+    // server.send({
+    //   type: MessageTypesToServer.Pause,
+    //   correlationId
+    // });
     setLastMsgToServer(MessageTypesToServer.Pause);
   }
 
@@ -73,25 +81,26 @@ const App: React.FC = () => {
   return (
     <main>
 
-      <div className='paramLine'>
-        <h1>Clients amount</h1>
+      <div className='flexContainer'>
+        <h1>Clients amount:</h1>
         <span className='badge'>{clientsAmount}</span>
       </div>
-      <div className='paramLine'>
-        <h1>Your ID</h1>
+      <div className='flexContainer'>
+        <h1>Your ID:</h1>
         <span className='badge'>{correlationId}</span>
       </div>
-      <h1>Counter</h1>
-      <aside><p>{counter}</p></aside>
-      <section>
-        {lastMsgToServer === MessageTypesToServer.Pause
-          ?
-          <button onClick={handleContinue}>Continue</button>
-          :
-          <button onClick={handleStart}>Start</button>
-        }
+
+      <h1 className='title'>WebSocket counter</h1>
+      <div className='counter'>
+        <span >{counter}</span>
+      </div>
+
+      <div className='flexContainer'>
+        <button disabled={lastMsgToServer === MessageTypesToServer.Pause} onClick={handleStart}>Start</button>
+        <button disabled={lastMsgToServer !== MessageTypesToServer.Pause} onClick={handleContinue}>Continue</button>
         <button onClick={handlePause}>Pause</button>
-      </section>
+        <button onClick={handleReset}>Reset</button>
+      </div >
     </main >
   );
 }
