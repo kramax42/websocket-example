@@ -72,10 +72,15 @@ const App: React.FC = () => {
 
   return (
     <main>
-      <h1>Clients amount</h1>
-      <h2>{clientsAmount}</h2>
-      <h1>Your ID</h1>
-      <h2>{correlationId}</h2>
+
+      <div className='paramLine'>
+        <h1>Clients amount</h1>
+        <span className='badge'>{clientsAmount}</span>
+      </div>
+      <div className='paramLine'>
+        <h1>Your ID</h1>
+        <span className='badge'>{correlationId}</span>
+      </div>
       <h1>Counter</h1>
       <aside><p>{counter}</p></aside>
       <section>
