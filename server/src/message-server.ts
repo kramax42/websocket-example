@@ -1,6 +1,5 @@
 import * as WebSocket from 'ws';
-import { MessageTypesToClient, UUID } from './messages';
-
+import { UUID } from './messages';
 
 export interface ClientSession {
   counter: number;
@@ -11,13 +10,17 @@ export interface ClientSession {
 export abstract class MessageServer<T> {
 
   protected clientSessions = new Map<UUID, ClientSession>();
+  protected clientAmountInterval: NodeJS.Timer;
 
   constructor(private readonly wsServer: WebSocket.Server) {
     this.wsServer.on('connection', this.subscribeToMessages);
     this.wsServer.on('error', this.cleanupDeadClients);
+    this.wsServer.on('close', this.stopClientAmountInterval);
   }
 
   protected abstract handleMessage(sender: WebSocket, message: T): void;
+  protected abstract startClientAmountInterval(): void;
+  protected abstract stopClientAmountInterval(): void;
 
   protected readonly subscribeToMessages = (ws: WebSocket): void => {
     ws.on('message', (data: WebSocket.Data) => {
@@ -31,6 +34,7 @@ export abstract class MessageServer<T> {
     ws.on('error', this.cleanUpClientsWork.bind(this));
     ws.on('close', this.cleanUpClientsWork.bind(this));
 
+    this.startClientAmountInterval();
   };
 
   private readonly cleanupDeadClients = (): void => {

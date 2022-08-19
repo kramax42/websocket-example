@@ -18,6 +18,20 @@ export class CounterServer extends MessageServer<Message> {
         }
     }
 
+    protected startClientAmountInterval(): void {
+        this.clientAmountInterval = setInterval(() => {
+            this.broadcast({
+                type: MessageTypesToClient.ClientsAmount,
+                payload: this.clients.size,
+                correlationId: 'serverId',
+            })
+        }, 2200)
+    }
+
+    protected stopClientAmountInterval(): void {
+        clearInterval(this.clientAmountInterval);
+    }
+
     private start(requestor: WebSocket, message: Message): void {
         let payload = 0;
         const correlationId = uuid() as UUID;

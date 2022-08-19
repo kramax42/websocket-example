@@ -26,6 +26,7 @@ export class WebsocketController {
 
   private readonly onMessageReceived = (event: MessageEvent) => {
     const message = JSON.parse(event.data) as Message;
+    // console.log(message)
     this.messagesCallback(message);
   }
 

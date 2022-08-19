@@ -17,7 +17,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleClientsAmount = useCallback((message: Message) => {
-    setClientsAmount(message.payload);
+    setClientsAmount(message.payload as number);
   }, []);
 
   const handleStart = () => {
@@ -79,7 +79,7 @@ const App: React.FC = () => {
       <h1>Counter</h1>
       <aside><p>{counter}</p></aside>
       <section>
-        {lastMsgToServer == MessageTypesToServer.Pause
+        {lastMsgToServer === MessageTypesToServer.Pause
           ?
           <button onClick={handleContinue}>Continue</button>
           :
