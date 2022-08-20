@@ -84,7 +84,7 @@ const App: React.FC = () => {
   return (
     <main>
       <div className='flexContainer'>
-        <h1>Websocket server connection:</h1>
+        <h1>Websocket connection:</h1>
         <span className='badge'>{isWsServerAlive.toString()}</span>
       </div>
       <div className='flexContainer'>
@@ -104,7 +104,7 @@ const App: React.FC = () => {
       <div className='flexContainer'>
         <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Pause || lastMsgToServer === MessageTypesToServer.Start || lastMsgToServer === MessageTypesToServer.Continue} onClick={handleStart}>Start</button>
         <button disabled={!isWsServerAlive || lastMsgToServer !== MessageTypesToServer.Pause} onClick={handleContinue}>Continue</button>
-        <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Reset} onClick={handlePause}>Pause</button>
+        <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Reset || lastMsgToServer === MessageTypesToServer.Pause} onClick={handlePause}>Pause</button>
         <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Reset} onClick={handleReset}>Reset</button>
       </div >
     </main >
