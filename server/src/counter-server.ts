@@ -10,7 +10,7 @@ export class CounterServer extends MessageServer<Message> {
             case MessageTypesToServer.Start: return this.start(sender, message);
             case MessageTypesToServer.Pause: return this.pause(sender, message);
             case MessageTypesToServer.Continue: return this.continue(sender, message);
-            // case MessageTypes.Stop: return this.handleNewBlockAnnouncement(sender, message);
+            case MessageTypesToServer.Reset: return this.reset(sender, message);
 
             default: {
                 console.log(`Received message of unknown type: "${message.type}"`);
@@ -34,7 +34,7 @@ export class CounterServer extends MessageServer<Message> {
 
     private start(requestor: WebSocket, message: Message): void {
         let payload = 0;
-        const correlationId = uuid() as UUID;
+        const correlationId = message.correlationId || uuid() as UUID;
         this.makeInterval(requestor, correlationId, payload);
     }
 
@@ -50,6 +50,9 @@ export class CounterServer extends MessageServer<Message> {
     }
 
     private makeInterval(requestor: WebSocket, correlationId: UUID, payload: any) {
+
+
+
         const timer = setInterval(() => {
             payload++;
             this.replyTo(requestor, {
@@ -66,7 +69,8 @@ export class CounterServer extends MessageServer<Message> {
                 });
             }
             console.log(correlationId, this.clientSessions.size);
-        }, 300)
+        }, 150)
+
 
         const clientSession: ClientSession = {
             counter: payload,
@@ -74,6 +78,7 @@ export class CounterServer extends MessageServer<Message> {
             client: requestor,
         }
         this.clientSessions.set(correlationId, clientSession);
+
     }
 
 
@@ -86,6 +91,21 @@ export class CounterServer extends MessageServer<Message> {
                 timer,
                 client: this.clientSessions.get(id)!.client,
                 counter: this.clientSessions.get(id)!.counter,
+            });
+
+        }
+
+    }
+
+    private reset(requestor: WebSocket, message: Message): void {
+        const id = message.correlationId;
+        if (this.clientSessions.has(id)) {
+            const timer = this.clientSessions.get(id)!.timer;
+            clearInterval(timer);
+            this.clientSessions.set(id, {
+                timer,
+                client: this.clientSessions.get(id)!.client,
+                counter: 0,
             });
         }
     }

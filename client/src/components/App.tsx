@@ -5,10 +5,10 @@ import { WebsocketController } from '../lib/websocket-controller';
 const server = new WebsocketController();
 
 const App: React.FC = () => {
-  const [counter, setCounter] = useState<number>(1987);
+  const [counter, setCounter] = useState<number>(0);
   const [clientsAmount, setClientsAmount] = useState<number>(1);
   const [correlationId, setCorrelationId] = useState<string>('null');
-  const [lastMsgToServer, setLastMsgToServer] = useState<MessageTypesToServer>(MessageTypesToServer.Stop);
+  const [lastMsgToServer, setLastMsgToServer] = useState<MessageTypesToServer>(MessageTypesToServer.Reset);
 
 
   const handleData = useCallback((message: Message) => {
@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const handleStart = () => {
     server.send({
       type: MessageTypesToServer.Start,
-
+      correlationId: correlationId !== 'null' ? correlationId : undefined,
     });
     setLastMsgToServer(MessageTypesToServer.Start);
   }
@@ -37,15 +37,16 @@ const App: React.FC = () => {
   }
 
   const handleReset = () => {
-    // server.send({
-    //   type: MessageTypesToServer.Pause,
-    //   correlationId
-    // });
-    setLastMsgToServer(MessageTypesToServer.Pause);
+
+    server.send({
+      type: MessageTypesToServer.Reset,
+      correlationId
+    });
+    setLastMsgToServer(MessageTypesToServer.Reset);
+    setCounter(0);
   }
 
   const handleContinue = () => {
-    // setCounter(message.payload);
     server.send({
       type: MessageTypesToServer.Continue,
       correlationId
@@ -57,7 +58,6 @@ const App: React.FC = () => {
     switch (message.type) {
       case MessageTypesToClient.Data: return handleData(message);
       case MessageTypesToClient.ClientsAmount: return handleClientsAmount(message);
-      // case MessageTypes.NewBlockAnnouncement: return handleNewBlockAnnouncement(message);
       default: {
         console.log(`Received message of unknown type: "${message.type}"`);
       }
@@ -96,10 +96,10 @@ const App: React.FC = () => {
       </div>
 
       <div className='flexContainer'>
-        <button disabled={lastMsgToServer === MessageTypesToServer.Pause} onClick={handleStart}>Start</button>
+        <button disabled={lastMsgToServer === MessageTypesToServer.Pause || lastMsgToServer === MessageTypesToServer.Start || lastMsgToServer === MessageTypesToServer.Continue} onClick={handleStart}>Start</button>
         <button disabled={lastMsgToServer !== MessageTypesToServer.Pause} onClick={handleContinue}>Continue</button>
-        <button onClick={handlePause}>Pause</button>
-        <button onClick={handleReset}>Reset</button>
+        <button disabled={lastMsgToServer === MessageTypesToServer.Reset} onClick={handlePause}>Pause</button>
+        <button disabled={lastMsgToServer === MessageTypesToServer.Reset} onClick={handleReset}>Reset</button>
       </div >
     </main >
   );

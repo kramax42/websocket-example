@@ -19,5 +19,5 @@ export enum MessageTypesToServer {
   Start = 'Start',
   Continue = 'Continue',
   Pause = 'Pause',
-  Stop = 'Stop',
+  Reset = 'Reset',
 }
