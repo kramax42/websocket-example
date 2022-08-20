@@ -27,12 +27,6 @@ export class WebsocketController {
         onWsClose();
       });
       ws.addEventListener('message', this.onMessageReceived);
-
-      //       client.on('open', heartbeat);
-      // client.on('ping', heartbeat);
-      // client.on('close', function clear() {
-      //   clearTimeout(this.pingTimeout);
-      // });
     });
   }
 
@@ -47,7 +41,6 @@ export class WebsocketController {
 
   async send(message: Partial<Message>): Promise<Message> {
     return new Promise<Message>(async (resolve, reject) => {
-
       this.websocket.then(
         ws => ws.send(JSON.stringify(message)),
       );

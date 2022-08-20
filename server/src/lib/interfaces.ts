@@ -22,7 +22,6 @@ export enum MessageTypesToClient {
   Data = 'Data',
 }
 
-
 export enum MessageTypesToServer {
   Start = 'Start',
   Continue = 'Continue',

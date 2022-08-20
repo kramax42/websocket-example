@@ -39,14 +39,12 @@ h1 {
   align-items: center;
 }
 
-
 .flexContainer {
   display: flex;
   flex-direction: row;
   gap: 1rem;
   margin-bottom: 1rem;
 }
-
 
 button {
   background: var(--text-color);
@@ -95,7 +93,6 @@ button[disabled] {
   text-transform: uppercase;
   user-select: none;
 }
-
 
 @media (max-width: 699px) {
   main {
