@@ -20,3 +20,10 @@ export enum MessageTypesToServer {
   Pause = 'Pause',
   Reset = 'Reset',
 }
+
+export interface ConnectToWs {
+  onMessage: (messages: Message) => void;
+  onWsOpen: () => void;
+  onWsClose: () => void;
+  onWsError: () => void;
+}

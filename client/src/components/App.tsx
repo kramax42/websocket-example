@@ -9,7 +9,7 @@ const App: React.FC = () => {
   const [clientsAmount, setClientsAmount] = useState<number>(1);
   const [correlationId, setCorrelationId] = useState<string>('null');
   const [lastMsgToServer, setLastMsgToServer] = useState<MessageTypesToServer>(MessageTypesToServer.Reset);
-
+  const [isWsServerAlive, setIsWsServerAlive] = useState(false);
 
   const handleData = useCallback((message: Message) => {
     setCounter(message.payload);
@@ -68,7 +68,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     async function initializeWsServer() {
-      await server.connect(handleServerMessages);
+      await server.connect({
+        onWsOpen: () => setIsWsServerAlive(true),
+        onWsClose: () => setIsWsServerAlive(false),
+        onWsError: () => setIsWsServerAlive(false),
+        onMessage: handleServerMessages,
+      });
     }
     initializeWsServer();
 
@@ -78,6 +83,10 @@ const App: React.FC = () => {
 
   return (
     <main>
+      <div className='flexContainer'>
+        <h1>Websocket server connection:</h1>
+        <span className='badge'>{isWsServerAlive.toString()}</span>
+      </div>
       <div className='flexContainer'>
         <h1>Clients amount:</h1>
         <span className='badge'>{clientsAmount}</span>
@@ -93,10 +102,10 @@ const App: React.FC = () => {
       </div>
 
       <div className='flexContainer'>
-        <button disabled={lastMsgToServer === MessageTypesToServer.Pause || lastMsgToServer === MessageTypesToServer.Start || lastMsgToServer === MessageTypesToServer.Continue} onClick={handleStart}>Start</button>
-        <button disabled={lastMsgToServer !== MessageTypesToServer.Pause} onClick={handleContinue}>Continue</button>
-        <button disabled={lastMsgToServer === MessageTypesToServer.Reset} onClick={handlePause}>Pause</button>
-        <button disabled={lastMsgToServer === MessageTypesToServer.Reset} onClick={handleReset}>Reset</button>
+        <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Pause || lastMsgToServer === MessageTypesToServer.Start || lastMsgToServer === MessageTypesToServer.Continue} onClick={handleStart}>Start</button>
+        <button disabled={!isWsServerAlive || lastMsgToServer !== MessageTypesToServer.Pause} onClick={handleContinue}>Continue</button>
+        <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Reset} onClick={handlePause}>Pause</button>
+        <button disabled={!isWsServerAlive || lastMsgToServer === MessageTypesToServer.Reset} onClick={handleReset}>Reset</button>
       </div >
     </main >
   );

@@ -1,8 +1,8 @@
-import { Message } from './interfaces';
+import { ConnectToWs, Message } from './interfaces';
 
 export class WebsocketController {
   private websocket!: Promise<WebSocket>;
-  private messagesCallback!: (messages: Message) => void;
+  private onMessage!: (messages: Message) => void;
 
   private get url(): string {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -10,13 +10,29 @@ export class WebsocketController {
     return `${protocol}://${hostname}`;
   }
 
-  connect(messagesCallback: (messages: Message) => void): Promise<WebSocket> {
-    this.messagesCallback = messagesCallback;
+  connect({ onMessage, onWsOpen, onWsClose, onWsError }: ConnectToWs): Promise<WebSocket> {
+    this.onMessage = onMessage;
     return this.websocket = new Promise((resolve, reject) => {
       const ws = new WebSocket(this.url);
-      ws.addEventListener('open', () => resolve(ws));
-      ws.addEventListener('error', err => reject(err));
+      ws.addEventListener('open', () => {
+        onWsOpen();
+        resolve(ws)
+      });
+      ws.addEventListener('error', err => {
+        onWsError();
+        reject(err);
+      });
+
+      ws.addEventListener('close', err => {
+        onWsClose();
+      });
       ws.addEventListener('message', this.onMessageReceived);
+
+      //       client.on('open', heartbeat);
+      // client.on('ping', heartbeat);
+      // client.on('close', function clear() {
+      //   clearTimeout(this.pingTimeout);
+      // });
     });
   }
 
@@ -26,7 +42,7 @@ export class WebsocketController {
 
   private readonly onMessageReceived = (event: MessageEvent) => {
     const message = JSON.parse(event.data) as Message;
-    this.messagesCallback(message);
+    this.onMessage(message);
   }
 
   async send(message: Partial<Message>): Promise<Message> {
