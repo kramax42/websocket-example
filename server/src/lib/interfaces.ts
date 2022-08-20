@@ -1,8 +1,15 @@
-/**
- * Alias string with UUID type for readability purpose. It hint that the message correlation ID
- * is not an arbitrary string, but represents a particular data format.
- */
+import * as WebSocket from 'ws';
+
+// Alias string with UUID type for readability purpose.
+// It hint that the message correlation ID
+// is not an arbitrary string, but represents a particular data format.
 export type UUID = string;
+
+export interface ClientSession {
+  counter: number;
+  timer: NodeJS.Timer;
+  client: WebSocket;
+}
 
 export interface Message {
   correlationId: UUID;
@@ -14,6 +21,7 @@ export enum MessageTypesToClient {
   ClientsAmount = 'ClientsAmount',
   Data = 'Data',
 }
+
 
 export enum MessageTypesToServer {
   Start = 'Start',

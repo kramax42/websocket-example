@@ -1,7 +1,6 @@
-/**
- * Alias string with UUID type for readability purpose. It hint that the message correlation ID
- * is not an arbitrary string, but represents a particular data format.
- */
+// Alias string with UUID type for readability purpose.
+// It hint that the message correlation ID
+// is not an arbitrary string, but represents a particular data format.
 export type UUID = string;
 
 export interface Message {
@@ -14,7 +13,6 @@ export enum MessageTypesToClient {
   ClientsAmount = 'ClientsAmount',
   Data = 'Data',
 }
-
 
 export enum MessageTypesToServer {
   Start = 'Start',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Message, MessageTypesToServer, MessageTypesToClient } from '../lib/messages';
+import { Message, MessageTypesToServer, MessageTypesToClient } from '../lib/interfaces';
 import { WebsocketController } from '../lib/websocket-controller';
 
 const server = new WebsocketController();
@@ -37,7 +37,6 @@ const App: React.FC = () => {
   }
 
   const handleReset = () => {
-
     server.send({
       type: MessageTypesToServer.Reset,
       correlationId
@@ -71,7 +70,6 @@ const App: React.FC = () => {
     async function initializeWsServer() {
       await server.connect(handleServerMessages);
     }
-
     initializeWsServer();
 
     return () => server.disconnect();
@@ -80,13 +78,12 @@ const App: React.FC = () => {
 
   return (
     <main>
-
       <div className='flexContainer'>
         <h1>Clients amount:</h1>
         <span className='badge'>{clientsAmount}</span>
       </div>
       <div className='flexContainer'>
-        <h1>Your ID:</h1>
+        <h1>Your UUID:</h1>
         <span className='badge'>{correlationId}</span>
       </div>
 
@@ -104,6 +101,5 @@ const App: React.FC = () => {
     </main >
   );
 }
-
 
 export default App;

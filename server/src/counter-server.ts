@@ -1,7 +1,7 @@
 import * as WebSocket from 'ws';
 import { uuid } from './lib/make-uuid';
-import { ClientSession, MessageServer } from './message-server';
-import { Message, MessageTypesToClient, MessageTypesToServer, UUID } from './messages';
+import { MessageServer } from './message-server';
+import { ClientSession, Message, MessageTypesToClient, MessageTypesToServer, UUID } from './lib/interfaces';
 
 export class CounterServer extends MessageServer<Message> {
 
@@ -11,7 +11,6 @@ export class CounterServer extends MessageServer<Message> {
             case MessageTypesToServer.Pause: return this.pause(sender, message);
             case MessageTypesToServer.Continue: return this.continue(sender, message);
             case MessageTypesToServer.Reset: return this.reset(sender, message);
-
             default: {
                 console.log(`Received message of unknown type: "${message.type}"`);
             }
@@ -50,9 +49,7 @@ export class CounterServer extends MessageServer<Message> {
     }
 
     private makeInterval(requestor: WebSocket, correlationId: UUID, payload: any) {
-
-
-
+        const INTERVAL_MS = 150;
         const timer = setInterval(() => {
             payload++;
             this.replyTo(requestor, {
@@ -69,8 +66,7 @@ export class CounterServer extends MessageServer<Message> {
                 });
             }
             console.log(correlationId, this.clientSessions.size);
-        }, 150)
-
+        }, INTERVAL_MS)
 
         const clientSession: ClientSession = {
             counter: payload,
@@ -78,9 +74,7 @@ export class CounterServer extends MessageServer<Message> {
             client: requestor,
         }
         this.clientSessions.set(correlationId, clientSession);
-
     }
-
 
     private pause(requestor: WebSocket, message: Message): void {
         const id = message.correlationId;
@@ -92,9 +86,7 @@ export class CounterServer extends MessageServer<Message> {
                 client: this.clientSessions.get(id)!.client,
                 counter: this.clientSessions.get(id)!.counter,
             });
-
         }
-
     }
 
     private reset(requestor: WebSocket, message: Message): void {
@@ -109,6 +101,5 @@ export class CounterServer extends MessageServer<Message> {
             });
         }
     }
-
 }
 

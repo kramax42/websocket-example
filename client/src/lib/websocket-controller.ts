@@ -1,4 +1,4 @@
-import { Message } from './messages';
+import { Message } from './interfaces';
 
 export class WebsocketController {
   private websocket!: Promise<WebSocket>;

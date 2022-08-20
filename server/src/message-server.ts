@@ -1,11 +1,6 @@
 import * as WebSocket from 'ws';
-import { UUID } from './messages';
+import { ClientSession, UUID } from './lib/interfaces';
 
-export interface ClientSession {
-  counter: number;
-  timer: NodeJS.Timer;
-  client: WebSocket;
-}
 
 export abstract class MessageServer<T> {
 
@@ -38,13 +33,11 @@ export abstract class MessageServer<T> {
   };
 
   private readonly cleanupDeadClients = (): void => {
-    console.log('cleanupDeadClients')
     this.wsServer.clients.forEach(client => {
       if (this.isDead(client)) {
         this.wsServer.clients.delete(client);
       }
     });
-
   };
 
   private cleanUpClientsWork(): void {
